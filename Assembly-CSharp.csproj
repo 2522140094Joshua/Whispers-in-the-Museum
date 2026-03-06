@@ -62,7 +62,11 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\animation\NewBehaviourScript.cs" />
     <Compile Include="Assets\Scripts\Logica_player.cs" />
+    <Compile Include="Assets\Ciencia\MinimalScifiPack\Documentation\Welcomecard_MinimalScifiPack.cs" />
     <Compile Include="Assets\Scripts\Puntos.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\laboratorio\Documentation\3D Laboratory environment with appratus.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
