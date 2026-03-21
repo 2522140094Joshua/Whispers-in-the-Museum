@@ -1,53 +1,74 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
+using TMPro;
 
 public class Pickup : MonoBehaviour
 {
-    public GameObject obj_pos;
+    [Header("Indicador visual")]
+    public GameObject promptUI; // Arrastra aqui un texto tipo "[E] Recoger"
 
-    private GameObject pickedObject = null;
+    private bool isNearItem = false;
+    private Collider nearbyItem = null;
+
+    void Start()
+    {
+        // Ocultar prompt al inicio
+        if (promptUI != null)
+            promptUI.SetActive(false);
+    }
+
     void Update()
     {
-       if (Input.GetKey("r"))
+        if (isNearItem && nearbyItem != null && Input.GetKeyDown(KeyCode.E))
         {
-            pickedObject.GetComponent<Rigidbody>().useGravity = true;
-            pickedObject.GetComponent<Rigidbody>().isKinematic = false;
-            pickedObject.gameObject.transform.SetParent(null);
-            pickedObject = null;
-
+            TryPickup();
         }
-
-
-
     }
 
-
-    private void OnTriggerStay(Collider other)
+    void TryPickup()
     {
-       if (other.gameObject.CompareTag("Pickup"))
+        if (InventoryManager.Instance == null) return;
+
+        if (InventoryManager.Instance.IsFull())
         {
-            if (Input.GetKey("e") && pickedObject == null)
-            {
-                other.GetComponent<Rigidbody>().useGravity = false;
-                other.GetComponent<Rigidbody>().isKinematic= true;
-                other.transform.position = obj_pos.transform.position;
-                other.gameObject.transform.SetParent(obj_pos.gameObject.transform);
-                pickedObject = other.gameObject;
-
-
-            }
+            Debug.Log("Inventario lleno, no puedes recoger mas items.");
+            return;
         }
-        // Mover objeto a la mano suavemente (sin SetParent)
-        if (pickedObject != null && obj_pos != null) // ← agregar && obj_pos != null
+
+        GameObject obj = nearbyItem.gameObject;
+        bool added = InventoryManager.Instance.AddItem(obj);
+
+        if (added)
         {
-            pickedObject.transform.position = Vector3.Lerp(
-                pickedObject.transform.position,
-                obj_pos.transform.position,
-                Time.deltaTime * 15f
-            );
-            pickedObject.transform.rotation = obj_pos.transform.rotation;
+            Debug.Log("Item recogido: " + obj.name);
+            isNearItem = false;
+            nearbyItem = null;
+
+            if (promptUI != null)
+                promptUI.SetActive(false);
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Pickup"))
+        {
+            isNearItem = true;
+            nearbyItem = other;
 
+            if (promptUI != null)
+                promptUI.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Pickup"))
+        {
+            isNearItem = false;
+            nearbyItem = null;
+
+            if (promptUI != null)
+                promptUI.SetActive(false);
+        }
+    }
 }
