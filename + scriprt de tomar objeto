@@ -1,0 +1,38 @@
+[33mfc2811a7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmodelos[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33me719bd4d[m[33m ([m[1;31morigin/modelos[m[33m)[m HEAD@{1}: checkout: moving from main to modelos
+[33m2b57329e[m[33m ([m[1;32mmain[m[33m)[m HEAD@{2}: reset: moving to HEAD~1
+[33m51b7befb[m HEAD@{3}: checkout: moving from modelos to main
+[33me719bd4d[m[33m ([m[1;31morigin/modelos[m[33m)[m HEAD@{4}: reset: moving to HEAD
+[33me719bd4d[m[33m ([m[1;31morigin/modelos[m[33m)[m HEAD@{5}: checkout: moving from main to modelos
+[33m51b7befb[m HEAD@{6}: checkout: moving from modelos to main
+[33me719bd4d[m[33m ([m[1;31morigin/modelos[m[33m)[m HEAD@{7}: commit: inventario + vista de 1ra persona
+[33mfc2811a7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmodelos[m[33m)[m HEAD@{8}: checkout: moving from main to modelos
+[33m51b7befb[m HEAD@{9}: checkout: moving from Modelos to main
+[33mfc2811a7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmodelos[m[33m)[m HEAD@{10}: commit: modifcacion de carpetas + scriprt de tomar objeto
+[33m6f8a288b[m HEAD@{11}: commit: ccambios agregados
+[33m966bedfd[m HEAD@{12}: commit: agregado nuevo personaje + interaccion
+[33me7ea098a[m HEAD@{13}: commit: mapa arreglado = addons
+[33mf7461934[m HEAD@{14}: commit (merge): resolver conflictos merge Modelos
+[33m80b98d93[m HEAD@{15}: commit (cherry-pick): resolver conflictos
+[33mec8070ba[m HEAD@{16}: checkout: moving from main to Modelos
+[33m51b7befb[m HEAD@{17}: reset: moving to 51b7befb78a34e890efa515d7ac60bc5f33563ce
+[33m51b7befb[m HEAD@{18}: checkout: moving from modelos to main
+[33mec8070ba[m HEAD@{19}: checkout: moving from main to modelos
+[33m51b7befb[m HEAD@{20}: commit: agregado policias + dialogos de interaccion con un NPC PD: cambiar npc SI ES NESCESARIO
+[33m2b57329e[m[33m ([m[1;32mmain[m[33m)[m HEAD@{21}: pull origin main: Fast-forward
+[33mb28af7b4[m HEAD@{22}: checkout: moving from Modelos to main
+[33mec8070ba[m HEAD@{23}: rebase (abort): returning to refs/heads/Modelos
+[33m903df494[m[33m ([m[1;31morigin/Sonido[m[33m)[m HEAD@{24}: pull origin Modelos --rebase (start): checkout 903df49443091ae983bf75b0b1281c481fc21fa6
+[33mec8070ba[m HEAD@{25}: checkout: moving from Modelos to Modelos
+[33mec8070ba[m HEAD@{26}: rebase (abort): returning to refs/heads/Modelos
+[33m903df494[m[33m ([m[1;31morigin/Sonido[m[33m)[m HEAD@{27}: pull origin Modelos --rebase (start): checkout 903df49443091ae983bf75b0b1281c481fc21fa6
+[33mec8070ba[m HEAD@{28}: checkout: moving from Modelos to Modelos
+[33mec8070ba[m HEAD@{29}: rebase (abort): returning to refs/heads/Modelos
+[33m903df494[m[33m ([m[1;31morigin/Sonido[m[33m)[m HEAD@{30}: pull origin Modelos --rebase (start): checkout 903df49443091ae983bf75b0b1281c481fc21fa6
+[33mec8070ba[m HEAD@{31}: commit: Agregando modelo escena1
+[33mb28af7b4[m HEAD@{32}: checkout: moving from main to Modelos
+[33mb28af7b4[m HEAD@{33}: commit: Remove Unity generated files
+[33m07403a99[m HEAD@{34}: commit: Fix .gitignore and remove Library
+[33m254fed26[m HEAD@{35}: commit (merge): Merge remoto
+[33m8ab3918a[m HEAD@{36}: Branch: renamed refs/heads/master to refs/heads/main
+[33m8ab3918a[m HEAD@{38}: commit (initial): Primer commit
