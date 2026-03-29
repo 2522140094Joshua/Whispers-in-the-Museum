@@ -56,4 +56,16 @@ public class InventoryManager : MonoBehaviour
     public List<GameObject> GetItems() => items;
 
     public bool IsFull() => items.Count >= maxSlots;
+
+    // Agrega esto al final de tu InventoryManager existente, antes del ultimo }
+    public void DeliverAllItems()
+    {
+        for (int i = items.Count - 1; i >= 0; i--)
+            Destroy(items[i]);
+
+        items.Clear();
+
+        if (InventoryUI.Instance != null)
+            InventoryUI.Instance.UpdateUI(items);
+    }
 }

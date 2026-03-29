@@ -54,4 +54,8 @@ public class Logica_player : MonoBehaviour
         animator.SetFloat("SpeedX", x);
         animator.SetFloat("SpeedY", corriendo ? y * 2f : y); // anima mas rapido al correr
     }
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 }

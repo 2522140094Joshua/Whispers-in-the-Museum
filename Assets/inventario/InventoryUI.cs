@@ -70,10 +70,8 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {
-                // Slot vacio
-                if (emptySlotSprite != null)
-                    slots[i].sprite = emptySlotSprite;
 
+                slots[i].sprite = emptySlotSprite;
                 slots[i].color = new Color(1f, 1f, 1f, 0.15f);
 
                 if (slotNames[i] != null)
