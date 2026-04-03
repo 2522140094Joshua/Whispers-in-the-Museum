@@ -100,14 +100,14 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
+    <Compile Include="Assets\Scripts\CambioNivel.cs" />
     <Compile Include="Assets\Scripts\cambio de escena\Teleporter.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRStegasaurus\Scripts\StegaSoundEffects.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\Scripts\Camara.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRVelociraptor\Scripts\RaptorSoundEffects.cs" />
-    <Compile Include="Assets\Scripts\Interactuar.cs" />
-    <Compile Include="Assets\Scripts\Dialogo.cs" />
+    <Compile Include="Assets\inventario\zonedrop\DoorOpener.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\Scripts\moverJugador.cs" />
