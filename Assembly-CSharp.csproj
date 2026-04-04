@@ -113,6 +113,7 @@
     <Compile Include="Assets\Scripts\moverJugador.cs" />
     <Compile Include="Assets\inventario\ItemData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
+    <Compile Include="Assets\Scripts\Menu\MunuManegr.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRPachycephalasaurus\Scripts\BoneheadSoundEffects.cs" />
   </ItemGroup>
   <ItemGroup>
