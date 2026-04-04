@@ -1,61 +1,105 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 public class Logica_player : MonoBehaviour
 {
     [Header("Movimiento")]
     public float speed = 5f;
-    public float rotationSpeed = 200f;
     public float jumpForce = 5f;
 
     [Header("Sprint")]
-    public float velocidadSprint = 10f;  // velocidad al correr
-    public KeyCode teclaSprint = KeyCode.LeftShift; // tecla para correr
-    private bool corriendo = false;
+    public float velocidadSprint = 10f;
+    public KeyCode teclaSprint = KeyCode.LeftShift;
 
-    [Header("Audio")]
-    public AudioClip sonidoPuntos;
-    public AudioClip sonidoNegativo;
+    [Header("Cámara Primera Persona")]
+    public Transform camaraJugador;
+    public float mouseSensitivity = 100f;
 
+    private float xRotation = 0f;
+    private float yRotation = 0f;  // ← acumulamos rotación Y total
     private Rigidbody rb;
     private Animator animator;
-    public float x, y;
+    private Vector3 inputDir;
+    private bool corriendo;
+
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     void Start()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.freezeRotation = true;
+
+        // Sincronizamos yRotation con la rotación actual del personaje
+        yRotation = transform.eulerAngles.y;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
-        x = Input.GetAxis("Horizontal");
-        y = Input.GetAxis("Vertical");
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            animator.SetFloat("SpeedY", 0f, 0.1f, Time.deltaTime);
+            return;
+        }
 
-        // Sprint: true si mantiene Shift y se esta moviendo
-        corriendo = Input.GetKey(teclaSprint) && y != 0;
-
-        float velocidadActual = corriendo ? velocidadSprint : speed;
-
-        // Rotacion y movimiento
-        //transform.Rotate(0, x * rotationSpeed * Time.deltaTime, 0);
-        transform.Translate(0, 0, y * velocidadActual * Time.deltaTime);
-
-        // Rigidbody movimiento
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 movimiento = new Vector3(horizontal, 0f, vertical) * velocidadActual * Time.deltaTime;
-        rb.MovePosition(rb.position + movimiento);
-
-        // Animaciones
-        animator.SetFloat("SpeedX", x);
-        animator.SetFloat("SpeedY", corriendo ? y * 2f : y); // anima mas rapido al correr
+        MoverCamara();
+        ManejarMovimiento();
     }
-    private void Awake()
+
+    void MoverCamara()
     {
-        DontDestroyOnLoad(gameObject);
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        // Acumulamos Y para aplicarlo en FixedUpdate
+        yRotation += mouseX;
+
+        // Cámara solo maneja eje vertical
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -80f, 80f);
+        camaraJugador.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+    }
+
+    void ManejarMovimiento()
+    {
+        float x = Input.GetAxisRaw("Horizontal");
+        float y = Input.GetAxisRaw("Vertical");
+
+        if (Mathf.Abs(x) < 0.1f) x = 0f;
+        if (Mathf.Abs(y) < 0.1f) y = 0f;
+
+        corriendo = Input.GetKey(teclaSprint) && y > 0f;
+
+        inputDir = transform.right * x + transform.forward * y;
+        if (inputDir.magnitude > 1f)
+            inputDir = inputDir.normalized;
+
+        float animY = corriendo ? y * 2f : y * 0.5f;
+        animator.SetFloat("SpeedY", animY, 0.1f, Time.deltaTime);
+    }
+
+    void FixedUpdate()
+    {
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+            return;
+        }
+
+        // ── Rotación horizontal via Rigidbody ──────────────────
+        // Usamos MoveRotation con el valor acumulado — compatible con freezeRotation
+        Quaternion targetRot = Quaternion.Euler(0f, yRotation, 0f);
+        rb.MoveRotation(targetRot);
+
+        // ── Movimiento ─────────────────────────────────────────
+        float vel = corriendo ? velocidadSprint : speed;
+        Vector3 newVel = inputDir * vel;
+        rb.velocity = new Vector3(newVel.x, rb.velocity.y, newVel.z);
     }
 }
