@@ -15,10 +15,11 @@ public class Logica_player : MonoBehaviour
     public float mouseSensitivity = 100f;
 
     private float xRotation = 0f;
-    private float yRotation = 0f;  // ← acumulamos rotación Y total
+    private float yRotation = 0f;
+    private float inputX = 0f;  // ← guardamos input crudo
+    private float inputY = 0f;
     private Rigidbody rb;
     private Animator animator;
-    private Vector3 inputDir;
     private bool corriendo;
 
     void Awake()
@@ -32,10 +33,7 @@ public class Logica_player : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.freezeRotation = true;
-
-        // Sincronizamos yRotation con la rotación actual del personaje
         yRotation = transform.eulerAngles.y;
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -44,12 +42,13 @@ public class Logica_player : MonoBehaviour
     {
         if (Cursor.lockState != CursorLockMode.Locked)
         {
+            animator.SetFloat("SpeedX", 0f, 0.1f, Time.deltaTime);
             animator.SetFloat("SpeedY", 0f, 0.1f, Time.deltaTime);
             return;
         }
 
         MoverCamara();
-        ManejarMovimiento();
+        ManejarInput();
     }
 
     void MoverCamara()
@@ -57,30 +56,29 @@ public class Logica_player : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        // Acumulamos Y para aplicarlo en FixedUpdate
         yRotation += mouseX;
 
-        // Cámara solo maneja eje vertical
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80f, 80f);
         camaraJugador.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 
-    void ManejarMovimiento()
+    void ManejarInput()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float y = Input.GetAxisRaw("Vertical");
+        // Solo guardamos el input, NO calculamos dirección aquí
+        inputX = Input.GetAxisRaw("Horizontal");
+        inputY = Input.GetAxisRaw("Vertical");
 
-        if (Mathf.Abs(x) < 0.1f) x = 0f;
-        if (Mathf.Abs(y) < 0.1f) y = 0f;
+        if (Mathf.Abs(inputX) < 0.1f) inputX = 0f;
+        if (Mathf.Abs(inputY) < 0.1f) inputY = 0f;
 
-        corriendo = Input.GetKey(teclaSprint) && y > 0f;
+        corriendo = Input.GetKey(teclaSprint) && inputY > 0f;
 
-        inputDir = transform.right * x + transform.forward * y;
-        if (inputDir.magnitude > 1f)
-            inputDir = inputDir.normalized;
+        // Animator se actualiza con input crudo
+        float animY = corriendo ? inputY * 1f : inputY * 0.5f;
+        float animX = corriendo ? inputX * 1f : inputX * 0.5f;
 
-        float animY = corriendo ? y * 2f : y * 0.5f;
+        animator.SetFloat("SpeedX", animX, 0.1f, Time.deltaTime);
         animator.SetFloat("SpeedY", animY, 0.1f, Time.deltaTime);
     }
 
@@ -92,12 +90,15 @@ public class Logica_player : MonoBehaviour
             return;
         }
 
-        // ── Rotación horizontal via Rigidbody ──────────────────
-        // Usamos MoveRotation con el valor acumulado — compatible con freezeRotation
-        Quaternion targetRot = Quaternion.Euler(0f, yRotation, 0f);
-        rb.MoveRotation(targetRot);
+        // 1. Primero aplicamos la rotación
+        rb.MoveRotation(Quaternion.Euler(0f, yRotation, 0f));
 
-        // ── Movimiento ─────────────────────────────────────────
+        // 2. DESPUÉS calculamos inputDir con el transform ya rotado
+        Vector3 inputDir = transform.right * inputX + transform.forward * inputY;
+        if (inputDir.magnitude > 1f)
+            inputDir = inputDir.normalized;
+
+        // 3. Aplicamos velocidad
         float vel = corriendo ? velocidadSprint : speed;
         Vector3 newVel = inputDir * vel;
         rb.velocity = new Vector3(newVel.x, rb.velocity.y, newVel.z);
