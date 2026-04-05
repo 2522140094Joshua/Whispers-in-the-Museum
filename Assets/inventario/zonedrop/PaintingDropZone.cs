@@ -11,26 +11,49 @@ public class PaintingDropZone : MonoBehaviour
     public DoorOpener doorOpener;
 
     [Header("Validacion")]
-    public int pinturaRequeridas = 3;       // ← cuantas pinturas necesita
+    public int pinturaRequeridas = 3;
+
+    [Header("Contador")]
+    public float tiempoLimite = 60f;          // ← segundos antes de cerrar la puerta
+    public TMPro.TextMeshProUGUI timerUI;     // ← (opcional) texto en pantalla del contador
 
     [Header("Prompt UI")]
     public GameObject promptUI;
-    public GameObject promptFaltanUI;       // ← texto "Te faltan pinturas" opcional
+    public GameObject promptFaltanUI;
 
     private bool playerDentro = false;
     private bool triggered = false;
+    private bool contadorActivo = false;
+    private float tiempoRestante;
 
     void Start()
     {
         OcultarPrompt();
         if (promptFaltanUI != null) promptFaltanUI.SetActive(false);
+        if (timerUI != null) timerUI.gameObject.SetActive(false);
     }
 
     void Update()
     {
+        // ── Lógica del contador ──────────────────────────────────────────
+        if (contadorActivo)
+        {
+            tiempoRestante -= Time.deltaTime;
+
+            if (timerUI != null)
+                timerUI.text = Mathf.CeilToInt(tiempoRestante).ToString();
+
+            if (tiempoRestante <= 0f)
+            {
+                contadorActivo = false;
+                if (timerUI != null) timerUI.gameObject.SetActive(false);
+                if (doorOpener != null) doorOpener.CloseDoor(); // ← cierra la puerta
+            }
+        }
+
+        // ── Lógica de entrega ────────────────────────────────────────────
         if (!playerDentro || triggered) return;
 
-        // Actualiza el prompt según cuántas pinturas tiene
         if (InventoryManager.Instance.GetItems().Count >= pinturaRequeridas)
             MostrarPrompt();
         else
@@ -39,7 +62,6 @@ public class PaintingDropZone : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             List<GameObject> items = InventoryManager.Instance.GetItems();
-
             if (items.Count < pinturaRequeridas)
             {
                 if (promptFaltanUI != null)
@@ -51,6 +73,13 @@ public class PaintingDropZone : MonoBehaviour
             OcultarPrompt();
             StartCoroutine(PlaceAndDeliver(new List<GameObject>(items)));
         }
+    }
+
+    // Llama a este método desde otro script si necesitas cancelar el contador
+    public void CancelarContador()
+    {
+        contadorActivo = false;
+        if (timerUI != null) timerUI.gameObject.SetActive(false);
     }
 
     IEnumerator MostrarMensajeTemporal()
@@ -68,12 +97,10 @@ public class PaintingDropZone : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         playerDentro = true;
 
-        // Solo muestra "[E] Colocar" si tiene suficientes pinturas
         if (InventoryManager.Instance.GetItems().Count >= pinturaRequeridas)
             MostrarPrompt();
         else
         {
-            // Si no tiene suficientes, muestra el mensaje de faltan
             if (promptFaltanUI != null)
                 StartCoroutine(MostrarMensajeTemporal());
         }
@@ -98,7 +125,6 @@ public class PaintingDropZone : MonoBehaviour
         {
             GameObject painting = toDeliver[i];
             Vector3 pos = origin + Vector3.right * (i * spacingBetweenPaintings);
-
             painting.SetActive(true);
             painting.transform.position = pos;
             painting.transform.rotation = Quaternion.Euler(paintingRotation);
@@ -114,6 +140,12 @@ public class PaintingDropZone : MonoBehaviour
 
         yield return new WaitForSeconds(displayDuration);
         InventoryManager.Instance.DeliverAllItems();
+
         if (doorOpener != null) doorOpener.OpenDoor();
+
+        // ── Inicia el contador después de abrir la puerta ────────────────
+        tiempoRestante = tiempoLimite;
+        contadorActivo = true;
+        if (timerUI != null) timerUI.gameObject.SetActive(true);
     }
 }
