@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour
@@ -12,11 +12,31 @@ public class InventoryManager : MonoBehaviour
 
     void Awake()
     {
+        // ── Singleton robusto — evita duplicados entre escenas ──
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject); // sobrevive cambios de escena
     }
 
     public bool AddItem(GameObject item)
     {
+        // Validaciones defensivas
+        if (item == null)
+        {
+            Debug.LogWarning("AddItem: item es null.");
+            return false;
+        }
+
+        if (items.Contains(item))
+        {
+            Debug.LogWarning("AddItem: el item ya está en el inventario — " + item.name);
+            return false;
+        }
+
         if (items.Count >= maxSlots)
         {
             Debug.Log("Inventario lleno!");
@@ -24,48 +44,61 @@ public class InventoryManager : MonoBehaviour
         }
 
         items.Add(item);
-        item.SetActive(false); // desaparece del mundo
+        item.SetActive(false);
 
-        // ARREGLADO: ahora si actualiza la UI al recoger un item
-        if (InventoryUI.Instance != null)
-            InventoryUI.Instance.UpdateUI(items);
-
+        ActualizarUI();
         return true;
     }
 
     public bool RemoveItem(int index)
     {
-        if (index < 0 || index >= items.Count) return false;
+        if (index < 0 || index >= items.Count)
+        {
+            Debug.LogWarning($"RemoveItem: índice {index} fuera de rango.");
+            return false;
+        }
 
-        items[index].SetActive(true); // regresa al mundo
+        if (items[index] != null)
+            items[index].SetActive(true);
+
         items.RemoveAt(index);
-
-        if (InventoryUI.Instance != null)
-            InventoryUI.Instance.UpdateUI(items);
-
+        ActualizarUI();
         return true;
     }
 
     public GameObject GetItem(int index)
     {
-        if (index < items.Count)
-            return items[index];
-        return null;
+        if (index < 0 || index >= items.Count) return null;
+        return items[index];
     }
 
     public List<GameObject> GetItems() => items;
 
     public bool IsFull() => items.Count >= maxSlots;
 
-    // Agrega esto al final de tu InventoryManager existente, antes del ultimo }
+    public int Count() => items.Count;
+
     public void DeliverAllItems()
     {
+        // Limpiamos nulos por si algún objeto fue destruido externamente
+        items.RemoveAll(i => i == null);
+
         for (int i = items.Count - 1; i >= 0; i--)
-            Destroy(items[i]);
+        {
+            if (items[i] != null)
+                Destroy(items[i]);
+        }
 
         items.Clear();
+        ActualizarUI();
+    }
 
+    // ── Método centralizado para actualizar UI ──
+    private void ActualizarUI()
+    {
         if (InventoryUI.Instance != null)
             InventoryUI.Instance.UpdateUI(items);
+        else
+            Debug.LogWarning("InventoryManager: InventoryUI.Instance es null.");
     }
 }

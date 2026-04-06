@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class MouseLook : MonoBehaviour
 {
     [Header("Sensibilidad")]
@@ -12,7 +11,7 @@ public class MouseLook : MonoBehaviour
 
     [Header("Referencias")]
     public Transform cuerpoJugador;  // raiz del Player
-    public Transform huesoCabeza;    // head bone (solo para posicion)
+    public Transform huesoCabeza;    // mixamorig:Head (no HeadTop_End)
 
     private float rotacionVertical = 0f;
 
@@ -20,12 +19,16 @@ public class MouseLook : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Si no se asigno en el Inspector, busca el Player automaticamente
+        if (cuerpoJugador == null)
+            cuerpoJugador = GameObject.FindWithTag("Player").transform;
     }
 
     void LateUpdate()
     {
-        // Ignorar si el inventario esta abierto
         if (Cursor.lockState != CursorLockMode.Locked) return;
+        if (cuerpoJugador == null) return; // seguridad extra
 
         float mouseX = Input.GetAxis("Mouse X") * sensibilidadX;
         float mouseY = Input.GetAxis("Mouse Y") * sensibilidadY;
@@ -34,15 +37,15 @@ public class MouseLook : MonoBehaviour
         rotacionVertical -= mouseY;
         rotacionVertical = Mathf.Clamp(rotacionVertical, limiteAbajo, limiteArriba);
 
-        // Cuerpo rota horizontalmente con el mouse
-        if (cuerpoJugador != null)
-            cuerpoJugador.Rotate(Vector3.up * mouseX);
+        // Cuerpo rota horizontalmente
+        cuerpoJugador.Rotate(Vector3.up * mouseX);
 
-        // Camara sigue la POSICION del hueso pero ignora su rotacion de animacion
+        // Camara sigue la posicion del hueso de la cabeza
         if (huesoCabeza != null)
             transform.position = huesoCabeza.position;
 
-        // Solo aplica la rotacion del mouse, sin el bamboleo
-        transform.rotation = cuerpoJugador.rotation * Quaternion.Euler(rotacionVertical, 0f, 0f);
+        // Rotacion solo del mouse, sin heredar bamboleo de animacion
+        float yawMundo = cuerpoJugador.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(rotacionVertical, yawMundo, 0f);
     }
 }

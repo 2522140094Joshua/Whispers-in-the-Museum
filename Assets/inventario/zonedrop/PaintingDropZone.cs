@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,54 +8,144 @@ public class PaintingDropZone : MonoBehaviour
     public float displayDuration = 2f;
     public Vector3 paintingRotation = new Vector3(0, 180, 0);
     public Transform rowStartPoint;
-    public DoorOpener doorOpener; // arrastra el GameObject de la puerta aqui
+    public DoorOpener doorOpener;
 
+    [Header("Validacion")]
+    public int pinturaRequeridas = 3;
+
+    [Header("Contador")]
+    public float tiempoLimite = 60f;          // ← segundos antes de cerrar la puerta
+    public TMPro.TextMeshProUGUI timerUI;     // ← (opcional) texto en pantalla del contador
+
+    [Header("Prompt UI")]
+    public GameObject promptUI;
+    public GameObject promptFaltanUI;
+
+    private bool playerDentro = false;
     private bool triggered = false;
+    private bool contadorActivo = false;
+    private float tiempoRestante;
+
+    void Start()
+    {
+        OcultarPrompt();
+        if (promptFaltanUI != null) promptFaltanUI.SetActive(false);
+        if (timerUI != null) timerUI.gameObject.SetActive(false);
+    }
+
+    void Update()
+    {
+        // ── Lógica del contador ──────────────────────────────────────────
+        if (contadorActivo)
+        {
+            tiempoRestante -= Time.deltaTime;
+
+            if (timerUI != null)
+                timerUI.text = Mathf.CeilToInt(tiempoRestante).ToString();
+
+            if (tiempoRestante <= 0f)
+            {
+                contadorActivo = false;
+                if (timerUI != null) timerUI.gameObject.SetActive(false);
+                if (doorOpener != null) doorOpener.CloseDoor(); // ← cierra la puerta
+            }
+        }
+
+        // ── Lógica de entrega ────────────────────────────────────────────
+        if (!playerDentro || triggered) return;
+
+        if (InventoryManager.Instance.GetItems().Count >= pinturaRequeridas)
+            MostrarPrompt();
+        else
+            OcultarPrompt();
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            List<GameObject> items = InventoryManager.Instance.GetItems();
+            if (items.Count < pinturaRequeridas)
+            {
+                if (promptFaltanUI != null)
+                    StartCoroutine(MostrarMensajeTemporal());
+                return;
+            }
+
+            triggered = true;
+            OcultarPrompt();
+            StartCoroutine(PlaceAndDeliver(new List<GameObject>(items)));
+        }
+    }
+
+    // Llama a este método desde otro script si necesitas cancelar el contador
+    public void CancelarContador()
+    {
+        contadorActivo = false;
+        if (timerUI != null) timerUI.gameObject.SetActive(false);
+    }
+
+    IEnumerator MostrarMensajeTemporal()
+    {
+        if (promptFaltanUI != null)
+        {
+            promptFaltanUI.SetActive(true);
+            yield return new WaitForSeconds(2f);
+            promptFaltanUI.SetActive(false);
+        }
+    }
 
     void OnTriggerEnter(Collider other)
     {
-        if (triggered) return;
         if (!other.CompareTag("Player")) return;
+        playerDentro = true;
 
-        List<GameObject> items = InventoryManager.Instance.GetItems();
-        if (items.Count == 0) return;
-
-        triggered = true;
-        StartCoroutine(PlaceAndDeliver(new List<GameObject>(items)));
+        if (InventoryManager.Instance.GetItems().Count >= pinturaRequeridas)
+            MostrarPrompt();
+        else
+        {
+            if (promptFaltanUI != null)
+                StartCoroutine(MostrarMensajeTemporal());
+        }
     }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+        playerDentro = false;
+        OcultarPrompt();
+        if (promptFaltanUI != null) promptFaltanUI.SetActive(false);
+    }
+
+    void MostrarPrompt() { if (promptUI != null) promptUI.SetActive(true); }
+    void OcultarPrompt() { if (promptUI != null) promptUI.SetActive(false); }
 
     IEnumerator PlaceAndDeliver(List<GameObject> toDeliver)
     {
+        Vector3 origin = rowStartPoint != null ? rowStartPoint.position : transform.position;
 
-            Vector3 origin = rowStartPoint != null ? rowStartPoint.position : transform.position;
+        for (int i = 0; i < toDeliver.Count; i++)
+        {
+            GameObject painting = toDeliver[i];
+            Vector3 pos = origin + Vector3.right * (i * spacingBetweenPaintings);
+            painting.SetActive(true);
+            painting.transform.position = pos;
+            painting.transform.rotation = Quaternion.Euler(paintingRotation);
 
-            for (int i = 0; i < toDeliver.Count; i++)
-            {
-                GameObject painting = toDeliver[i];
-                Vector3 pos = origin + Vector3.right * (i * spacingBetweenPaintings);
+            Rigidbody rb = painting.GetComponent<Rigidbody>();
+            if (rb != null) { rb.velocity = Vector3.zero; rb.isKinematic = true; }
 
-                painting.SetActive(true);
-                painting.transform.position = pos;
-                painting.transform.rotation = Quaternion.Euler(paintingRotation);
+            Collider col = painting.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
 
-                Rigidbody rb = painting.GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    // Corregido: Rigidbody no tiene 'linearVelocity', debe ser 'velocity'
-                    rb.velocity = Vector3.zero;
-                    rb.isKinematic = true;
-                }
+            yield return new WaitForSeconds(0.3f);
+        }
 
-                Collider col = painting.GetComponent<Collider>();
-                if (col != null) col.enabled = false;
+        yield return new WaitForSeconds(displayDuration);
+        InventoryManager.Instance.DeliverAllItems();
 
-                yield return new WaitForSeconds(0.3f);
-            }
+        if (doorOpener != null) doorOpener.OpenDoor();
 
-            yield return new WaitForSeconds(displayDuration);
-            InventoryManager.Instance.DeliverAllItems();
-            // Abrir puerta despues de entregar
-            if (doorOpener != null)
-            doorOpener.OpenDoor();
+        // ── Inicia el contador después de abrir la puerta ────────────────
+        tiempoRestante = tiempoLimite;
+        contadorActivo = true;
+        if (timerUI != null) timerUI.gameObject.SetActive(true);
     }
 }
