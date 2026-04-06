@@ -10,6 +10,7 @@ public class Logica_player : MonoBehaviour
     public float speed = 5f;
     public float rotationSpeed = 200f;
     public float jumpForce = 5f;
+    public bool puedeMoverse = true;
 
     [Header("Sprint")]
     public float velocidadSprint = 10f;  // velocidad al correr
@@ -32,27 +33,29 @@ public class Logica_player : MonoBehaviour
 
     void Update()
     {
-        x = Input.GetAxis("Horizontal");
-        y = Input.GetAxis("Vertical");
+        {
+            if (puedeMoverse) // <--- Solo se mueve si esto es verdadero
+            {
+                x = Input.GetAxis("Horizontal");
+                y = Input.GetAxis("Vertical");
 
-        // Sprint: true si mantiene Shift y se esta moviendo
-        corriendo = Input.GetKey(teclaSprint) && y != 0;
+                corriendo = Input.GetKey(teclaSprint) && y != 0;
+                float velocidadActual = corriendo ? velocidadSprint : speed;
 
-        float velocidadActual = corriendo ? velocidadSprint : speed;
+                // Movimiento Rigidbody
+                Vector3 movimiento = new Vector3(x, 0f, y) * velocidadActual * Time.deltaTime;
+                rb.MovePosition(rb.position + movimiento);
 
-        // Rotacion y movimiento
-        //transform.Rotate(0, x * rotationSpeed * Time.deltaTime, 0);
-        transform.Translate(0, 0, y * velocidadActual * Time.deltaTime);
-
-        // Rigidbody movimiento
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 movimiento = new Vector3(horizontal, 0f, vertical) * velocidadActual * Time.deltaTime;
-        rb.MovePosition(rb.position + movimiento);
-
-        // Animaciones
-        animator.SetFloat("SpeedX", x);
-        animator.SetFloat("SpeedY", corriendo ? y * 2f : y); // anima mas rapido al correr
+                // Animaciones
+                animator.SetFloat("SpeedX", x);
+                animator.SetFloat("SpeedY", corriendo ? y * 2f : y);
+            }
+            else // Si no puede moverse, reseteamos las animaciones a 0
+            {
+                animator.SetFloat("SpeedX", 0);
+                animator.SetFloat("SpeedY", 0);
+            }
+        }
     }
     private void Awake()
     {
