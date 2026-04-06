@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\GeneradorSecuencia.cs" />
     <Compile Include="Assets\Scripts\take_paint\Pickup.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
+    <Compile Include="Assets\Scripts\Boton3D.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
@@ -85,7 +86,6 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
-    <Compile Include="Assets\Scripts\BotonInteractuable.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_FrameRateCounter.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRPachycephalasaurus\Scripts\BlendShapeTrigger.cs" />
@@ -100,6 +100,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Door\Door.cs" />
     <Compile Include="Assets\Scripts\ControladorPuzzle.cs" />
+    <Compile Include="Assets\Scripts\GeneradorPalancas.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
     <Compile Include="Assets\Scripts\MouseLook.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
@@ -113,6 +114,8 @@
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRVelociraptor\Scripts\RaptorSoundEffects.cs" />
     <Compile Include="Assets\inventario\zonedrop\DoorOpener.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
+    <Compile Include="Assets\Scripts\PalancaInteractuable.cs" />
+    <Compile Include="Assets\Scripts\ControlLinterna.cs" />
     <Compile Include="Assets\Scripts\moverJugador.cs" />
     <Compile Include="Assets\inventario\ItemData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
