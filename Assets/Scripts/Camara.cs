@@ -22,6 +22,9 @@ public class Camara : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Time.timeScale == 0f)
+            return;
+
         //Nos da el valor del movimiento del mouse en el eje X y Y, lo multiplica por la sensibilidad y por el tiempo entre frames para que el movimiento sea suave e independiente de la velocidad de fotogramas
         float ValorX = Input.GetAxis("Mouse X") * Sensibilidad * Time.deltaTime;
         float ValorY = Input.GetAxis("Mouse Y") * Sensibilidad * Time.deltaTime;
