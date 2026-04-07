@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class GeneradorPass : MonoBehaviour
 {
     [Header("Configuración de Clave")]
-    public string claveCorrecta = "1985";
+    public string claveCorrecta = "2026";
 
     [Header("Referencias de UI")]
     public GameObject panelUI;

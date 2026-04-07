@@ -74,4 +74,5 @@ public class GeneradorPalancas : MonoBehaviour
 
         Debug.Log("Ventana final cerrada. ¡Corre a la salida!");
     }
+
 }
