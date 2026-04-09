@@ -50,6 +50,7 @@ public class PaintingDropZone : MonoBehaviour
             if (tiempoRestante <= 0f)
             {
                 contadorActivo = false;
+
                 if (timerUI != null) timerUI.gameObject.SetActive(false);
 
                 // Cerrar la puerta
@@ -158,5 +159,20 @@ public class PaintingDropZone : MonoBehaviour
         tiempoRestante = tiempoLimite;
         contadorActivo = true;
         if (timerUI != null) timerUI.gameObject.SetActive(true);
+    }
+
+    public void ResetZone()
+    {
+        triggered = false;
+        contadorActivo = false;
+        tiempoRestante = 0f;
+
+        if (timerUI != null)
+            timerUI.gameObject.SetActive(false);
+
+        OcultarPrompt();
+
+        if (promptFaltanUI != null)
+            promptFaltanUI.SetActive(false);
     }
 }

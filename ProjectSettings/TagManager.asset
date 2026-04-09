@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Pickup
   - DropZone
+  - ItemCorrecto
   layers:
   - Default
   - TransparentFX

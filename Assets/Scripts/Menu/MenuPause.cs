@@ -6,7 +6,7 @@ public class PauseMenu : MonoBehaviour
     public static PauseMenu instance;
 
     public GameObject panelPausa;
-    bool pausado = false;
+    private bool pausado = false;
 
     void Awake()
     {
@@ -18,66 +18,96 @@ public class PauseMenu : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
+
+        // Escuchar cuando cualquier escena cargue para reconectar referencias
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// Se ejecuta automáticamente cada vez que carga una escena nueva.
+    /// Aquí reconectamos TODO lo que pudo haberse perdido.
+    /// </summary>
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Resetear estado de pausa
+        pausado = false;
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // Si estamos en el menú no necesitamos el panel
+        if (scene.name == "Menu")
+        {
+            if (panelPausa != null) panelPausa.SetActive(false);
+            return;
+        }
+
+        // Reconectar panelPausa buscándolo por nombre en la nueva escena
+        if (panelPausa == null)
+        {
+            GameObject found = GameObject.Find("PanelPausa");
+            if (found != null)
+                panelPausa = found;
+            else
+                Debug.LogWarning("[PauseMenu] No se encontró 'PanelPausa' en la escena.");
+        }
+
+        if (panelPausa != null) panelPausa.SetActive(false);
     }
 
     void Update()
     {
-        if (SceneManager.GetActiveScene().name == "Menu")
-            return;
+        if (SceneManager.GetActiveScene().name == "Menu") return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (pausado)
-                Continuar();
-            else
-                Pausar();
+            if (pausado) Continuar();
+            else Pausar();
         }
     }
 
     public void Pausar()
     {
-        panelPausa.SetActive(true);
+        if (panelPausa != null) panelPausa.SetActive(true);
         Time.timeScale = 0f;
         pausado = true;
-
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
     public void Continuar()
     {
-        panelPausa.SetActive(false);
+        if (panelPausa != null) panelPausa.SetActive(false);
         Time.timeScale = 1f;
         pausado = false;
-
-        Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void Reiniciar()
     {
+        // Limpiar estado — OnSceneLoaded se encarga del resto
         Time.timeScale = 1f;
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            Destroy(player);
-
+        pausado = false;
+        panelPausa = null; // forzar reconexión al recargar
+        if (panelPausa != null) panelPausa.SetActive(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        panelPausa.SetActive(false);
     }
 
     public void IrMenu()
     {
         Time.timeScale = 1f;
-        panelPausa.SetActive(false);
         pausado = false;
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        if (player != null)
-            Destroy(player);
-
+        panelPausa = null; // forzar reconexión
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         SceneManager.LoadScene("Menu");
     }
 }

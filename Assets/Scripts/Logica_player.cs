@@ -27,12 +27,13 @@ public class Logica_player : MonoBehaviour
 
     void Awake()
     {
-        if (instance != null && instance != this)
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        if (players.Length > 1)
         {
             Destroy(gameObject);
             return;
         }
-        instance = this;
         DontDestroyOnLoad(gameObject);
     }
 

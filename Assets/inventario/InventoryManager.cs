@@ -86,13 +86,28 @@ public class InventoryManager : MonoBehaviour
         for (int i = items.Count - 1; i >= 0; i--)
         {
             if (items[i] != null)
-                Destroy(items[i]);
+                items[i].SetActive(false);
         }
 
         items.Clear();
         ActualizarUI();
     }
 
+    public void ResetInventory()
+    {
+        // Destruye todos los objetos del inventario
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (items[i] != null)
+                items[i].SetActive(false);
+        }
+
+        // Limpia la lista
+        items.Clear();
+
+        // Actualiza UI
+        ActualizarUI();
+    }
     // ── Método centralizado para actualizar UI ──
     private void ActualizarUI()
     {

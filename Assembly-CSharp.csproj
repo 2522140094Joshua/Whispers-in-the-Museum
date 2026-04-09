@@ -64,6 +64,7 @@
     <Compile Include="Assets\Script para escena 2\aun no se para que sirven\PuzzleBox.cs" />
     <Compile Include="Assets\Scripts\Menu\MenuPause.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
+    <Compile Include="Assets\Script para escena 3\UI\Jumpscarepromptsetup.cs" />
     <Compile Include="Assets\Scripts\take_paint\Pickup.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Script para escena 2\LeverInteract.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Assets\inventario\zonedrop\PaintingDropZone.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Script para escena 3\ObjectDisappear.cs" />
+    <Compile Include="Assets\Script para escena 3\sounds\Ambientmusic.cs" />
     <Compile Include="Assets\contemporary house\scripits\MouseLook.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
@@ -89,11 +91,13 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
+    <Compile Include="Assets\inventario\ResettableObject.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_FrameRateCounter.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRPachycephalasaurus\Scripts\BlendShapeTrigger.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
+    <Compile Include="Assets\Script para escena 3\ghost\Killtimer.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
@@ -115,9 +119,11 @@
     <Compile Include="Assets\Scripts\cambio de escena\Teleporter.cs" />
     <Compile Include="Assets\Script para escena 2\LeverManager.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRStegasaurus\Scripts\StegaSoundEffects.cs" />
+    <Compile Include="Assets\Script para escena 3\ATM\Atmjumpscare.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\Scripts\Camara.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Script para escena 3\SceneTimer.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRVelociraptor\Scripts\RaptorSoundEffects.cs" />
     <Compile Include="Assets\AN Interactive Physical Door Pack\Scripts\AN_HeroController.cs" />
     <Compile Include="Assets\inventario\zonedrop\DoorGameOver.cs" />
@@ -131,6 +137,7 @@
     <Compile Include="Assets\inventario\ItemData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\Scripts\Menu\MunuManegr.cs" />
+    <Compile Include="Assets\Script para escena 3\ghost\Ghostemerge.cs" />
     <Compile Include="Assets\FerociousIndustries\PBRDinosaurs\PBRPachycephalasaurus\Scripts\BoneheadSoundEffects.cs" />
   </ItemGroup>
   <ItemGroup>

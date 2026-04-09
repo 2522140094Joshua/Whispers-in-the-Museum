@@ -24,14 +24,60 @@ public class DoorGameOver : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Text timerLabel;
     private bool triggered = false;
+    private GameObject gameOverCanvas;
+    private Vector3 playerStartPos;
+    private GameObject player;
 
+
+
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+            playerStartPos = player.transform.position;
+    }
     public void TriggerGameOver()
     {
-        if (triggered) return;
-        triggered = true;
-        StartCoroutine(GameOverSequence());
+        StartCoroutine(ResetLevel());
     }
 
+    IEnumerator ResetLevel()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+            player.SetActive(false);
+
+        yield return new WaitForSeconds(1f);
+
+        // Reset inventario (recomendado)
+        if (InventoryManager.Instance != null)
+            InventoryManager.Instance.ResetInventory();
+
+        // Reset zona (MUY IMPORTANTE)
+        PaintingDropZone zone = FindObjectOfType<PaintingDropZone>();
+        if (zone != null)
+            zone.ResetZone();
+
+        // Reset puerta
+        DoorOpener door = GetComponent<DoorOpener>();
+        if (door != null)
+            door.CloseDoor();
+
+        // Regresar jugador
+        if (player != null)
+        {
+            player.transform.position = playerStartPos;
+            player.SetActive(true);
+        }
+        ResettableObject[] objetos = FindObjectsOfType<ResettableObject>(true);
+
+        foreach (var obj in objetos)
+        {
+            obj.ResetObject();
+        }
+    }
     IEnumerator GameOverSequence()
     {
         // Bloquear cursor sin tocar scripts del jugador
@@ -41,7 +87,7 @@ public class DoorGameOver : MonoBehaviour
         // Esperar en tiempo real para que la puerta cierre
         yield return new WaitForSecondsRealtime(delayBeforeGameOver);
 
-        BuildGameOverUI();
+       
 
         // Fade IN usando tiempo real (no afecta si TimeScale cambia)
         yield return StartCoroutine(FadeRealtime(0f, 1f, fadeDuration));
@@ -66,54 +112,26 @@ public class DoorGameOver : MonoBehaviour
 
     void DoRestart()
     {
-        StopAllCoroutines();
-        // Restaurar estado antes de recargar
-        Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (canvasGO != null)
+        {
+            Destroy(canvasGO);
+        }
+
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.ResetInventory();
+        }
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            Destroy(player);
+        }
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-
-    void BuildGameOverUI()
-    {
-        // Sin DontDestroyOnLoad — se destruye solo al recargar
-        GameObject canvasGO = new GameObject("GameOverCanvas");
-
-        Canvas canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 9999;
-
-        CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-
-        canvasGO.AddComponent<GraphicRaycaster>();
-        canvasGroup = canvasGO.AddComponent<CanvasGroup>();
-        canvasGroup.alpha = 0f;
-        canvasGroup.interactable = true;
-        canvasGroup.blocksRaycasts = true;
-
-        MakeImage(canvasGO.transform, "BG", bgColor, Vector2.zero, Vector2.one);
-        MakeImage(canvasGO.transform, "LineTop", titleColor,
-            new Vector2(0.15f, 0.672f), new Vector2(0.85f, 0.675f));
-        MakeText(canvasGO.transform, "Title", gameOverTitle,
-            new Vector2(0.1f, 0.55f), new Vector2(0.9f, 0.74f),
-            titleColor, 90, FontStyle.Bold);
-        MakeImage(canvasGO.transform, "LineBot", titleColor,
-            new Vector2(0.15f, 0.548f), new Vector2(0.85f, 0.551f));
-        MakeText(canvasGO.transform, "Subtitle", subtitleText,
-            new Vector2(0.15f, 0.43f), new Vector2(0.85f, 0.54f),
-            subtitleColor, 30, FontStyle.Italic);
-        timerLabel = MakeText(canvasGO.transform, "Timer", $"Reiniciando en {(int)gameOverDisplayTime}...",
-            new Vector2(0.25f, 0.30f), new Vector2(0.75f, 0.40f),
-            timerColor, 26, FontStyle.Normal);
-        MakeButton(canvasGO.transform,
-            new Vector2(0.35f, 0.16f), new Vector2(0.65f, 0.25f),
-            "Reiniciar ahora",
-            new Color(0.65f, 0.08f, 0.08f, 1f),
-            () => DoRestart());
-    }
-
+    private GameObject canvasGO;
+   
     void MakeImage(Transform parent, string name, Color color, Vector2 aMin, Vector2 aMax)
     {
         GameObject go = new GameObject(name);
