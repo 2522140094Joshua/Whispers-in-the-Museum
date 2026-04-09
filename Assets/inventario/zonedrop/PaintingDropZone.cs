@@ -14,8 +14,12 @@ public class PaintingDropZone : MonoBehaviour
     public int pinturaRequeridas = 3;
 
     [Header("Contador")]
-    public float tiempoLimite = 60f;          // ← segundos antes de cerrar la puerta
-    public TMPro.TextMeshProUGUI timerUI;     // ← (opcional) texto en pantalla del contador
+    public float tiempoLimite = 60f;
+    public TMPro.TextMeshProUGUI timerUI;
+
+    [Header("Game Over")]
+    [Tooltip("Arrastra aquí el GameObject PuertaPivote2 (el que tiene DoorGameOver)")]
+    public DoorGameOver doorGameOver;
 
     [Header("Prompt UI")]
     public GameObject promptUI;
@@ -47,7 +51,15 @@ public class PaintingDropZone : MonoBehaviour
             {
                 contadorActivo = false;
                 if (timerUI != null) timerUI.gameObject.SetActive(false);
-                if (doorOpener != null) doorOpener.CloseDoor(); // ← cierra la puerta
+
+                // Cerrar la puerta
+                if (doorOpener != null) doorOpener.CloseDoor();
+
+                // ★ Activar Game Over ★
+                if (doorGameOver != null)
+                    doorGameOver.TriggerGameOver();
+                else
+                    Debug.LogWarning("[PaintingDropZone] doorGameOver no asignado en el Inspector.");
             }
         }
 
@@ -75,7 +87,6 @@ public class PaintingDropZone : MonoBehaviour
         }
     }
 
-    // Llama a este método desde otro script si necesitas cancelar el contador
     public void CancelarContador()
     {
         contadorActivo = false;
@@ -143,7 +154,7 @@ public class PaintingDropZone : MonoBehaviour
 
         if (doorOpener != null) doorOpener.OpenDoor();
 
-        // ── Inicia el contador después de abrir la puerta ────────────────
+        // Inicia el contador después de abrir la puerta
         tiempoRestante = tiempoLimite;
         contadorActivo = true;
         if (timerUI != null) timerUI.gameObject.SetActive(true);
